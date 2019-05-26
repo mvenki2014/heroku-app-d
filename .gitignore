@@ -64,12 +64,3 @@ typings/
 .idea/misc.xml
 .idea/modules.xml
 .idea/workspace.xml
-h-exp-app/app.js
-h-exp-app/bin/
-h-exp-app/package-lock.json
-h-exp-app/package.json
-h-exp-app/public/
-h-exp-app/routes/
-h-exp-app/views/
-package-lock.json
-package.json
