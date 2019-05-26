@@ -1,8 +1,12 @@
 var express = require('express');
 var router = express.Router();
-var {Pool, Client} = require('pg');
+var {Client} = require('pg');
 
-const pool = new Pool({
+const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: true,
+});
+/*const pool = new Pool({
     user: 'rtdgwuicrlspms',
     host: 'ec2-54-197-239-115.compute-1.amazonaws.com',
     database: 'postgresql-reticulated-12689',
@@ -18,10 +22,12 @@ const db = new Client({
     password: '361e7db96571053d67a3ac4319610b4e9177c663f844f2a9ca576a1fa7c84e61',
     port: 5432,
 });
-db.connect();
+db.connect();*/
+
+client.connect();
 router.get('/getuser', function (req, res) {
     res.setHeader('content-type', 'application/json');
-    pool.query('SELECT * from reg_users', (err, dbRes) => {
+    client.query('SELECT * from reg_users', (err, dbRes) => {
         console.log(err, dbRes);
         res.send({
             type: 'GET',
@@ -29,7 +35,7 @@ router.get('/getuser', function (req, res) {
                 dbRes
             ]
         });
-        // pool.end()
+        // client.end()
     });
 });
 router.post('/postuser', function (req, res) {
