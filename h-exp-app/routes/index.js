@@ -24,9 +24,18 @@ const db = new Client({
 });
 db.connect();*/
 
+/*const client = new Client({
+    user: 'postgres',
+    host: 'localhost',
+    database: 'postgres',
+    password: 'root',
+    port: 5432,
+});*/
+
+
 client.connect();
 router.get('/getuser', function (req, res) {
-    res.setHeader('content-type', 'application/json');
+    //res.setHeader('content-type', 'application/json');
     client.query('SELECT * from reg_users', (err, dbRes) => {
         console.log(err, dbRes);
         res.send({
@@ -39,15 +48,28 @@ router.get('/getuser', function (req, res) {
     });
 });
 router.post('/postuser', function (req, res) {
-    res.setHeader('content-type', 'application/json');
-    console.log(req.body);
-    res.send({
-        type: 'POST',
-        data: [
-            req.body.name,
-            req.body.phone,
-        ]
-    });
+    if (req.body.submit === 'submit') {
+        res.setHeader('content-type', 'application/json');
+        console.log(req.body);
+        client.query("INSERT INTO reg_users (name, email, phone, status) VALUES ($1, $2, $3, 'Active') RETURNING id",
+            [req.body.f_name + ' ' + req.body.l_name, req.body.email, req.body.phone], (err, dbRes) => {
+                if (err) {
+                    res.send({status: 500, msg: err});
+                } else {
+                    console.log('row inserted with id: ' + dbRes.rows[0].id);
+                    res.send({
+                        status: 'Success',
+                        msg: 'row inserted with id: ' + dbRes.rows[0].id,
+                    })
+                }
+
+            });
+    } else {
+        res.send({
+            type: 'POST',
+            msg: 'Invalid Request',
+        })
+    }
 });
 
 /* GET home page. */
