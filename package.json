@@ -4,7 +4,7 @@
   "description": "This is test heroku deployment",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./h-exp-app/bin/www"
   },
   "repository": {
     "type": "git",
