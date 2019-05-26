@@ -32,7 +32,7 @@ router.get('/getuser', function (req, res) {
         res.send({
             type: 'GET',
             data: [
-                dbRes
+                dbRes.rows
             ]
         });
         // client.end()
