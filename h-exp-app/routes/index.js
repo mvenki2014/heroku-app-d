@@ -1,5 +1,46 @@
 var express = require('express');
 var router = express.Router();
+var {Pool, Client} = require('pg');
+
+const pool = new Pool({
+    user: 'postgres',
+    host: 'localhost',
+    database: 'postgres',
+    password: 'root',
+    port: 5432,
+});
+const db = new Client({
+    user: 'postgres',
+    host: 'localhost',
+    database: 'postgres',
+    password: 'root',
+    port: 5432,
+});
+db.connect();
+router.get('/getuser', function (req, res) {
+    res.setHeader('content-type', 'application/json');
+    pool.query('SELECT * from reg_users', (err, dbRes) => {
+        console.log(err, dbRes);
+        res.send({
+            type: 'GET',
+            data: [
+                dbRes.rows
+            ]
+        });
+        // pool.end()
+    });
+});
+router.post('/postuser', function (req, res) {
+    res.setHeader('content-type', 'application/json');
+    console.log(req.body);
+    res.send({
+        type: 'POST',
+        data: [
+            req.body.name,
+            req.body.phone,
+        ]
+    });
+});
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
