@@ -1,28 +1,12 @@
 var express = require('express');
 var router = express.Router();
 var {Client} = require('pg');
+var nodemailer = require('nodemailer');
 
 const client = new Client({
     connectionString: process.env.DATABASE_URL,
     ssl: true,
 });
-/*const pool = new Pool({
-    user: 'rtdgwuicrlspms',
-    host: 'ec2-54-197-239-115.compute-1.amazonaws.com',
-    database: 'postgresql-reticulated-12689',
-    // database: 'd9abmah4kjopuk',
-    password: '361e7db96571053d67a3ac4319610b4e9177c663f844f2a9ca576a1fa7c84e61',
-    port: 5432,
-});
-const db = new Client({
-    user: 'rtdgwuicrlspms',
-    host: 'ec2-54-197-239-115.compute-1.amazonaws.com',
-    database: 'postgresql-reticulated-12689',
-    // database: 'd9abmah4kjopuk',
-    password: '361e7db96571053d67a3ac4319610b4e9177c663f844f2a9ca576a1fa7c84e61',
-    port: 5432,
-});
-db.connect();*/
 
 /*const client = new Client({
     user: 'postgres',
@@ -32,6 +16,35 @@ db.connect();*/
     port: 5432,
 });*/
 
+var transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,  //true for 465 port, false for other ports
+    service: 'gmail',
+    auth: {
+        user: 'venkatesh.m@fininfocom.com',
+        pass: 'Venkisingle123?'
+    }
+});
+
+function sendmail(req, res) {
+    var mailOptions = {
+        from: 'venkatesh.m@fininfocom.com',
+        to: req.body.email,
+        subject: 'Sending Email using Node.js',
+        text: 'That was easy!',
+        html: '<h1>Thank you..!</h1>' +
+            '<p>Your application submited success.<br>' +
+            'We will contant you soon</p>'
+    };
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            return error;
+        } else {
+            return true;
+        }
+    });
+}
 
 client.connect();
 router.get('/getuser', function (req, res) {
@@ -57,10 +70,12 @@ router.post('/postuser', function (req, res) {
                     res.send({status: 500, msg: err});
                 } else {
                     console.log('row inserted with id: ' + dbRes.rows[0].id);
+                    sendmail(req, res);
                     res.send({
                         status: 'Success',
                         msg: 'row inserted with id: ' + dbRes.rows[0].id,
-                    })
+                    });
+                    res.redirect('/thanks.html');
                 }
 
             });
