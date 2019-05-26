@@ -24,10 +24,10 @@ router.get('/getuser', function (req, res) {
         res.send({
             type: 'GET',
             data: [
-                dbRes.rows
+                dbRes
             ]
         });
-        // pool.end()
+         pool.end()
     });
 });
 router.post('/postuser', function (req, res) {
