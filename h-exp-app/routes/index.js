@@ -8,13 +8,15 @@ const client = new Client({
     ssl: true,
 });
 
-/*const client = new Client({
+/*
+const client = new Client({
     user: 'postgres',
     host: 'localhost',
     database: 'postgres',
     password: 'root',
     port: 5432,
-});*/
+});
+*/
 
 var transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
@@ -39,43 +41,40 @@ function sendmail(req, res) {
     };
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
-            return error;
+            console.log('Mail has Error' + error);
+            res.redirect('/404.html');
         } else {
-            return true;
+            console.log('Email sent: ' + info.response);
+            res.redirect('/thank-you.html');
         }
+
     });
 }
 
 client.connect();
 router.get('/getuser', function (req, res) {
-    //res.setHeader('content-type', 'application/json');
     client.query('SELECT * from reg_users', (err, dbRes) => {
-        console.log(err, dbRes);
         res.send({
             type: 'GET',
             data: [
                 dbRes.rows
             ]
         });
-        // client.end()
     });
 });
 router.post('/postuser', function (req, res) {
     if (req.body.submit === 'submit') {
-        res.setHeader('content-type', 'application/json');
-        console.log(req.body);
         client.query("INSERT INTO reg_users (name, email, phone, status) VALUES ($1, $2, $3, 'Active') RETURNING id",
             [req.body.f_name + ' ' + req.body.l_name, req.body.email, req.body.phone], (err, dbRes) => {
                 if (err) {
                     res.send({status: 500, msg: err});
                 } else {
                     console.log('row inserted with id: ' + dbRes.rows[0].id);
-                    sendmail(req, res);
-                    res.send({
+                    /*res.send({
                         status: 'Success',
                         msg: 'row inserted with id: ' + dbRes.rows[0].id,
-                    });
-                    res.redirect('/thanks.html');
+                    });*/
+                    sendmail(req, res);
                 }
 
             });
@@ -89,12 +88,12 @@ router.post('/postuser', function (req, res) {
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-    res.setHeader('content-type', 'application/json');
+    //res.setHeader('content-type', 'application/json');
     res.send({type: "GET", data: 'Welcome to heroku nodejs by GET Request'})
 });
 
 router.post('/', function (req, res, next) {
-    res.setHeader('content-type', 'application/json');
+    // res.setHeader('content-type', 'application/json');
     res.send({type: "post", data: 'Welcome to heroku nodejs by POST Request'})
 });
 
